@@ -2,30 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
+public enum gameMode { playing,gameOver}
 
 public class MainScript : MonoBehaviour
 {
     static private MainScript S;
-    static private Dictionary<eWeaponType,WeaponDefinition> WEAP_DICT;
+    static private Dictionary<eWeaponType, WeaponDefinition> WEAP_DICT;
 
     [Header("Inscribed")]
     public bool spawnEnemies = true;
     public GameObject[] prefabEnemies;
-    public WeaponDefinition[]  weaponDefinitions;
+    public WeaponDefinition[] weaponDefinitions;
     public float enemySpawnPerSec = 0.5f;
     public float enemyInsetDefault = 1.5f;
     public float gameRestartDelay = 2f;
-    public GameObject prefabPowerUp;
+   
     public eWeaponType[] powerUpFreq = new eWeaponType[] {eWeaponType.blaster,eWeaponType.blaster,
                                           eWeaponType.spread,eWeaponType.shield};
-    private BoundSheckScript bndCheck;
 
+    public GameObject prefabPowerUp;
+    public GameObject ShipGO;
+  
+
+    [Header("Dynamic")]
+    [SerializeField] private int kills = 0;
+    public static bool fade = false;
+    public int level = 0;
+    private BoundSheckScript bndCheck;
+    ShipScript shipScript;
+    TimerScript timerScript;
+    UIScript uiScript;
+    public gameMode mode;
+    
     // Start is called before the first frame update
     void Awake()
     {
         S = this;
         bndCheck = GetComponent<BoundSheckScript>();
+        shipScript = ShipGO.GetComponent<ShipScript>();
+        timerScript = gameObject.GetComponent<TimerScript>();
+        uiScript = gameObject.GetComponent<UIScript>();
+       
         Invoke(nameof(SpawnEnemy), 1f / enemySpawnPerSec);
 
         WEAP_DICT = new Dictionary<eWeaponType, WeaponDefinition>();
@@ -34,6 +53,33 @@ public class MainScript : MonoBehaviour
             WEAP_DICT[def.type] = def;
         }
     }
+
+    private void Update()
+    {
+        uiScript.UpdateKills(kills);
+        uiScript.UpdateShieldLevel(shipScript.shieldLevel);
+        if(timerScript.levelTimer <= 0 && mode == gameMode.playing)
+        {
+            timerScript.resetTimer();
+            level++;
+            uiScript.UpdateLevel(level);
+            fade = true;
+            
+            if (enemySpawnPerSec >= 2.5f)
+            {
+                enemySpawnPerSec = 2.5f;
+            }
+            else enemySpawnPerSec += 0.1f;
+
+        }
+
+        if (fade)
+        {
+            uiScript.LevelUpfade();
+        }
+
+    }
+
 
     public void SpawnEnemy()
     {
@@ -56,11 +102,17 @@ public class MainScript : MonoBehaviour
         pos.x = Random.Range(xMin, xMax);
         pos.y = bndCheck.camHeight + enemyInset;
         go.transform.position = pos;
+
+        mode = gameMode.playing;
         Invoke(nameof(SpawnEnemy), 1f / enemySpawnPerSec);
     }
-    void DelayRestart()
+    public void DelayRestart()
     {
         Invoke(nameof(Restart), gameRestartDelay);
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
     }
     void Restart()
     {
@@ -69,7 +121,10 @@ public class MainScript : MonoBehaviour
     }
     static public void HeroDied()
     {
-        S.DelayRestart();
+        S.mode = gameMode.gameOver;
+        S.uiScript.DisplayGameOver();
+        S.timerScript.stopTimer();
+        //S.DelayRestart();
 
     }
 
@@ -93,5 +148,7 @@ public class MainScript : MonoBehaviour
             pUp.SetType(pUpType);
             pUp.transform.position = e.transform.position;
         }
+        S.kills++;
     }
+
 }

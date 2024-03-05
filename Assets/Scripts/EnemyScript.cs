@@ -54,7 +54,7 @@ public class EnemyScript : MonoBehaviour
                     {
                         calledShipDestroyed = true;
                         MainScript.SHIP_DESTROYED(this);
-                    }    
+                    }   
                     Destroy(this.gameObject);
                 }
             }
