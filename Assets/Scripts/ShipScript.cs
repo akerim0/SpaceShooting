@@ -65,7 +65,6 @@ public class ShipScript : MonoBehaviour
         if (enemyScript != null) {
             shieldLevel--;
             Destroy(go);
-
         }
         else if (pUp != null)
         {

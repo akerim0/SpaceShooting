@@ -48,7 +48,7 @@ public class UIScript : MonoBehaviour
         LevelUpGO.gameObject.SetActive(true);
 
         float t = disp.a;
-        Debug.Log("t1 = " + t);
+        //Debug.Log("t1 = " + t);
      
         if (disp.a >= 0.70f)
         {
@@ -63,6 +63,6 @@ public class UIScript : MonoBehaviour
 
         disp = new Color(disp.r, disp.g, disp.b, t);
         LevelUpGO.color  = disp;
-        Debug.Log("t = " + t);
+        //Debug.Log("t = " + t);
     }
 }

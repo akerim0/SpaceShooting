@@ -18,12 +18,17 @@ public class MainScript : MonoBehaviour
     public float enemySpawnPerSec = 0.5f;
     public float enemyInsetDefault = 1.5f;
     public float gameRestartDelay = 2f;
-   
+    public float planetInset = 2.0f;
     public eWeaponType[] powerUpFreq = new eWeaponType[] {eWeaponType.blaster,eWeaponType.blaster,
                                           eWeaponType.spread,eWeaponType.shield};
 
     public GameObject prefabPowerUp;
     public GameObject ShipGO;
+    public GameObject AllyPrefab;
+
+    public List<Texture2D> PlanetTextures;
+    public GameObject Planet;
+    int numOfTextures = 0;
   
 
     [Header("Dynamic")]
@@ -35,7 +40,15 @@ public class MainScript : MonoBehaviour
     TimerScript timerScript;
     UIScript uiScript;
     public gameMode mode;
-    
+    private Vector3 AllyPosLeft = new Vector3(-13.7f, -31.23f, 0);
+    private Vector3 AllyPosRight = new Vector3(13.7f, -31.23f, 0);
+    GameObject goAllyLeft;
+    GameObject goAllyRight;
+    private float timeToRespawnAlly = 4.0f;
+    AllyPos ally = AllyPos.none;
+    float timeL = 0;
+    float timeR = 0;
+    float planetCreationTime = 0;
     // Start is called before the first frame update
     void Awake()
     {
@@ -51,9 +64,9 @@ public class MainScript : MonoBehaviour
         foreach(WeaponDefinition def in weaponDefinitions)
         {
             WEAP_DICT[def.type] = def;
-        }
+        }      
     }
-
+    
     private void Update()
     {
         uiScript.UpdateKills(kills);
@@ -78,6 +91,22 @@ public class MainScript : MonoBehaviour
             uiScript.LevelUpfade();
         }
 
+
+
+        //Ally Respawn
+        if (goAllyLeft == null && (timeL + timeToRespawnAlly) < Time.time ) {
+            LeftRespawn();
+        }
+
+        if (goAllyRight == null && (timeR + timeToRespawnAlly) < Time.time) {
+            RightRespawn();
+        }
+        
+        // Planet Creation
+        if(Time.time > (planetCreationTime + 10f))
+        {
+            SpawnPlanet();
+        }
     }
 
 
@@ -149,6 +178,56 @@ public class MainScript : MonoBehaviour
             pUp.transform.position = e.transform.position;
         }
         S.kills++;
+    }
+
+    GameObject RespawnAlly(Vector3 pos,AllyPos po)
+    {
+
+        AllyPrefab.SetActive(false);
+        GameObject go = Instantiate(AllyPrefab);
+        go.GetComponent<AllyScript>().allyPos = po;
+            //allySc.allyPos = po;
+        go.SetActive(true);
+        go.transform.position = pos;
+        return go;
+
+    }
+
+    void LeftRespawn()
+    {
+        goAllyLeft = RespawnAlly(AllyPosLeft, AllyPos.left);
+        goAllyLeft.GetComponent<AllyScript>().AllyScDestroyedEvent += LeftAllyDestroyed;
+    }
+    void RightRespawn()
+    {
+        goAllyRight = RespawnAlly(AllyPosRight, AllyPos.right);
+        goAllyRight.GetComponent<AllyScript>().AllyScDestroyedEvent += RightAllyDestroyed;
+    }
+    void LeftAllyDestroyed()
+    {
+        timeL = Time.time;
+    }
+    void RightAllyDestroyed()
+    {
+        timeR = Time.time;
+    }
+    
+
+    void SpawnPlanet()
+    {
+        if (numOfTextures >= PlanetTextures.Count) numOfTextures = 0;
+        GameObject go_pl = Instantiate(Planet);
+        float y =  bndCheck.camHeight + planetInset;
+        float z = 8.20f;
+        float Xmin = -bndCheck.camWidth + planetInset;
+        float Xmax = bndCheck.camWidth - planetInset;
+
+        float x = Random.Range(Xmin, Xmax);
+
+        go_pl.GetComponent<Renderer>().material.mainTexture = PlanetTextures[numOfTextures];
+        go_pl.transform.position = new Vector3(x, y, z);
+        planetCreationTime = Time.time;
+        numOfTextures++;
     }
 
 }
