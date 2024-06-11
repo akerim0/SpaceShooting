@@ -30,7 +30,11 @@ public class BoundSheckScript : MonoBehaviour
     private void Awake()
     {
         camHeight = Camera.main.orthographicSize;
-        camWidth = camHeight * Camera.main.aspect;
+        camWidth = camHeight * 0.75f;
+        //camWidth = camHeight * Camera.main.aspect;
+        //Debug.Log("Camera aspect " + Camera.main.aspect);
+        //Debug.Log("Camera Height " + camHeight);
+        //Debug.Log("Camera Width " + camWidth);
     }
 
     // Update is called once per frame

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 public class UIScript : MonoBehaviour
 {
@@ -10,13 +11,18 @@ public class UIScript : MonoBehaviour
     public TMP_Text shieldLevText;
     public TMP_Text LevelUpGO;
     public GameObject GameOverGO;
+    public GameObject PauseMenu;
 
-    
+    public bool GameIspaused = false;
+    //public GameObject[] Enemies;
+    //public GameObject[] Heroes;
+
     // Start is called before the first frame update
     void Awake()
     {
         LevelUpGO.gameObject.SetActive(false);
         GameOverGO.SetActive(false);
+        PauseMenu.SetActive(false);
         Color temp = LevelUpGO.color;
         temp.a = 0;
         LevelUpGO.color = temp;
@@ -65,4 +71,36 @@ public class UIScript : MonoBehaviour
         LevelUpGO.color  = disp;
         //Debug.Log("t = " + t);
     }
+
+    //
+
+    void Restart()
+    {
+        SceneManager.LoadScene("__Scene_0");
+    }
+    public void ContinueGame()
+    {
+        if (!GameIspaused) return;
+        //Enemies = GameObject.FindGameObjectsWithTag("enemy");
+        //Heroes = GameObject.FindGameObjectsWithTag("hero");
+        PauseMenu.SetActive(false);
+        Time.timeScale = 1f;
+        GameIspaused = false;
+        
+    }
+    public void PauseGame()
+    {
+        if (GameIspaused) return;
+        //Enemies = GameObject.FindGameObjectsWithTag("enemy");
+        //Heroes = GameObject.FindGameObjectsWithTag("hero");
+        PauseMenu.SetActive(true);
+        Time.timeScale = 0f;
+        GameIspaused = true;
+      
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }

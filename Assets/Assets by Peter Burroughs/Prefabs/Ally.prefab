@@ -1291,7 +1291,7 @@ GameObject:
   - component: {fileID: 7086114617875597946}
   m_Layer: 8
   m_Name: Ally
-  m_TagString: Untagged
+  m_TagString: hero
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1342,6 +1342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lerpSpeed: 0.5
   allyPos: 0
+  timeDestroyed: 0
 --- !u!136 &7086114617875597946
 CapsuleCollider:
   m_ObjectHideFlags: 0

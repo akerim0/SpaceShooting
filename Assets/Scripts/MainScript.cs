@@ -29,7 +29,8 @@ public class MainScript : MonoBehaviour
     public List<Texture2D> PlanetTextures;
     public GameObject Planet;
     int numOfTextures = 0;
-  
+
+   
 
     [Header("Dynamic")]
     [SerializeField] private int kills = 0;
@@ -49,6 +50,7 @@ public class MainScript : MonoBehaviour
     float timeL = 0;
     float timeR = 0;
     float planetCreationTime = 0;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -64,9 +66,11 @@ public class MainScript : MonoBehaviour
         foreach(WeaponDefinition def in weaponDefinitions)
         {
             WEAP_DICT[def.type] = def;
-        }      
+        }
+
+        
     }
-    
+
     private void Update()
     {
         uiScript.UpdateKills(kills);
@@ -92,7 +96,6 @@ public class MainScript : MonoBehaviour
         }
 
 
-
         //Ally Respawn
         if (goAllyLeft == null && (timeL + timeToRespawnAlly) < Time.time ) {
             LeftRespawn();
@@ -106,6 +109,12 @@ public class MainScript : MonoBehaviour
         if(Time.time > (planetCreationTime + 10f))
         {
             SpawnPlanet();
+        }
+
+        if(mode == gameMode.playing && Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (uiScript.GameIspaused == false) uiScript.PauseGame();
+            else uiScript.ContinueGame();
         }
     }
 
@@ -135,19 +144,7 @@ public class MainScript : MonoBehaviour
         mode = gameMode.playing;
         Invoke(nameof(SpawnEnemy), 1f / enemySpawnPerSec);
     }
-    public void DelayRestart()
-    {
-        Invoke(nameof(Restart), gameRestartDelay);
-    }
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
-    void Restart()
-    {
-        SceneManager.LoadScene("__Scene_0");
-        
-    }
+   
     static public void HeroDied()
     {
         S.mode = gameMode.gameOver;
@@ -180,6 +177,8 @@ public class MainScript : MonoBehaviour
         S.kills++;
     }
 
+
+    //Ally
     GameObject RespawnAlly(Vector3 pos,AllyPos po)
     {
 
@@ -212,7 +211,8 @@ public class MainScript : MonoBehaviour
         timeR = Time.time;
     }
     
-
+    
+    //Planet
     void SpawnPlanet()
     {
         if (numOfTextures >= PlanetTextures.Count) numOfTextures = 0;
@@ -230,4 +230,14 @@ public class MainScript : MonoBehaviour
         numOfTextures++;
     }
 
+    public void DelayRestart()
+    {
+        Invoke(nameof(Restart), gameRestartDelay);
+    }
+   
+    void Restart()
+    {
+        SceneManager.LoadScene("__Scene_0");
+    }
+   
 }

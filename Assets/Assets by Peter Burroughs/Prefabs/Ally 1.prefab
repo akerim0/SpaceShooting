@@ -441,7 +441,7 @@ GameObject:
   - component: {fileID: 3040537898114464214}
   m_Layer: 8
   m_Name: Ally 1
-  m_TagString: Untagged
+  m_TagString: hero
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -484,8 +484,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lerpSpeed: 0.5
-  pointA: {fileID: 0}
-  pointB: {fileID: 0}
+  allyPos: 0
+  timeDestroyed: 0
 --- !u!54 &3040537898114464214
 Rigidbody:
   m_ObjectHideFlags: 0
